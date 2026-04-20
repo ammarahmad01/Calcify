@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calcify-deployment
+  labels:
+    app: calcify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calcify
+  template:
+    metadata:
+      labels:
+        app: calcify
+    spec:
+      containers:
+      - name: calcify
+        image: ammar0990/calcify:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"

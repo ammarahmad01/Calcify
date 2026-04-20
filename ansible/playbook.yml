@@ -1,0 +1,63 @@
+---
+- name: Configure Calcify Server
+  hosts: calcify
+  become: true
+
+  tasks:
+
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Install microk8s
+      snap:
+        name: microk8s
+        classic: yes
+        channel: 1.28/stable
+
+    - name: Add ubuntu user to microk8s group
+      user:
+        name: ubuntu
+        groups: microk8s
+        append: yes
+
+    - name: Wait for microk8s to be ready
+      command: microk8s status --wait-ready
+      timeout: 300
+
+    - name: Enable microk8s addons
+      command: microk8s enable dns ingress hostpath-storage
+
+    - name: Create .kube directory
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        mode: '0755'
+
+    - name: Export kubeconfig
+      shell: microk8s config > /home/ubuntu/.kube/config
+      args:
+        executable: /bin/bash
+
+    - name: Set kubeconfig permissions
+      file:
+        path: /home/ubuntu/.kube/config
+        owner: ubuntu
+        mode: '0600'
+
+    - name: Create argocd namespace
+      command: microk8s kubectl create namespace argocd
+      ignore_errors: yes
+
+    - name: Install ArgoCD
+      command: microk8s kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
