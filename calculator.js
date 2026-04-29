@@ -13,7 +13,14 @@ function append(char) {
 
 function calculate() {
     try {
-        document.getElementById('result').value = eval(document.getElementById('result').value);
+        let expression = document.getElementById('result').value;
+        let answer = eval(expression);
+        document.getElementById('result').value = answer;
+        
+        // Save to history backend
+        if (typeof saveCalculation === 'function') {
+            saveCalculation(expression + ' = ' + answer);
+        }
     } catch {
         document.getElementById('result').value = 'Error';
     }
