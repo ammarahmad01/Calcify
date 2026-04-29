@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcify - Cal</title>
+    <title>Calcify</title>
     <link rel="icon" href="c2.jfif" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -37,5 +37,38 @@
         </div>
     </div>
     <script src="calculator.js"></script>
+
+    <!-- History Panel -->
+<div id="history-panel" style="margin-top:20px; font-family:sans-serif;">
+  <h3>Calculation History</h3>
+  <ul id="history-list"></ul>
+</div>
+
+<script>
+  const BACKEND = 'http://13.233.132.168:30081';
+
+  async function loadHistory() {
+    try {
+      const res = await fetch(`${BACKEND}/history`);
+      const data = await res.json();
+      const list = document.getElementById('history-list');
+      list.innerHTML = data.map(h => `<li>${h.calculation} — ${new Date(h.time).toLocaleTimeString()}</li>`).join('');
+    } catch(e) {}
+  }
+
+  async function saveCalculation(calc) {
+    try {
+      await fetch(`${BACKEND}/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ calculation: calc })
+      });
+      loadHistory();
+    } catch(e) {}
+  }
+
+  loadHistory();
+  setInterval(loadHistory, 5000);
+</script>
 </body>
 </html>

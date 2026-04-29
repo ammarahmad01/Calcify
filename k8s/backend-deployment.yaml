@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calcify-backend
+  labels:
+    app: calcify-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calcify-backend
+  template:
+    metadata:
+      labels:
+        app: calcify-backend
+    spec:
+      containers:
+      - name: calcify-backend
+        image: ammar0990/calcify-backend:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
