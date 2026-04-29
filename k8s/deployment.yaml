@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: calcify
-        image: ammar0990/calcify:dac0aca
+        image: ammar0990/calcify:b720b30
         ports:
         - containerPort: 80
         resources:
